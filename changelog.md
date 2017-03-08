@@ -1,1 +1,2 @@
 Zalozenie takehoto krasneho suboru
+taketo napisem
