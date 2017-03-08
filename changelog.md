@@ -1,0 +1,1 @@
+Zalozenie takehoto krasneho suboru
