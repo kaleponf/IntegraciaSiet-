@@ -61,3 +61,23 @@ resources:
       enable_snat: True,
       network: ext-net
       }
+      
+  RouterInterface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router: { get_resource: Router }
+      subnet: { get_resource: Subnet }
+      
+  Instance:
+    type: OS::Nova::Server
+    properties:
+      name: { list_join: [ '-', [ { get_param: 'Cvicenie' }, 'instance' ] ] }
+      availability_zone: { get_param: 'AvailabilityZone' }
+      flavor: { get_param: 'Flavor' }
+      image: { get_param: 'Image' }
+      networks:
+        - subnet: {get_resource: 'Subnet'}
+      user_data: |
+        #!/bin/bash
+        apt-get update -y
+      user_data_format: RAW
