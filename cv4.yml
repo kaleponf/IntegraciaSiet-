@@ -102,9 +102,14 @@ resources:
       image: { get_param: 'Image' }
       networks:
        - port: { get_resource: JumpPort }
-      user_data: |
-        #!/bin/bash
-        apt-get update -y
+      user_data:
+        str_replace:
+          template: |
+            #!/bin/bash
+            hostname $Environment- jump
+            echo "Hello World !!!"
+          params: 
+            $Environment: { get_param: Environment }
       user_data_format: RAW
  
  JumpFloatingIpAssociation:
