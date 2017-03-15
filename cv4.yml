@@ -5,7 +5,7 @@ description: Basic infrastructure template cv.4
 
 parameters:
   Cvicenie:
-    description: Cislo cvicenia
+    description: Cisclo cvicenia
     type: string
     default: cv4
 
@@ -20,7 +20,7 @@ parameters:
     default: Linux
 
   Image:
-    description: image
+    description: Image
     type: string
     default: Ubuntu server 14.04 amd64 KIS
 
@@ -28,42 +28,36 @@ parameters:
     description: Environment
     type: string
     default: test
-  
+
   SubnetCidr:
     description: SubnetCidr
-    type: strng
-    default: 10.255.255.0/24   
-
+    type: string
+    default: 10.255.255.0/24
+    
 resources:
-   Net:
+  Net:
     type: OS::Neutron::Net
     properties:
       admin_state_up: True
       name: { list_join: [ '-', [ { get_param: 'Environment' }, 'network' ] ] }
       shared: False
+
   Subnet:
     type: OS::Neutron::Subnet
     properties:
-      admin_state_up: True
       name: { list_join: [ '-', [ { get_param: 'Environment' }, 'subnet' ] ] }
       cidr: { get_param: SubnetCidr }
       dns_nameservers:
-        -8.8.8.8
-        -8.8.4.4
+        - 8.8.8.8
+        - 8.8.4.4
       enable_dhcp: True
-      network: { get_resource: Net }      
-  #Instance:
-   # type: OS::Nova::Server
-    #properties:
-     # #name: instance-cv3
-      #name: { list_join: [ '-', [ { get_param: 'Cvicenie' }, 'instance' ] ] }
-      #availability_zone: { get_param: 'AvailabilityZone' }
-      #flavor: { get_param: 'Flavor' }
-      #image: { get_param: 'Image' }
-      #network: { get_param: 'Network' }
-     # networks:
-      #  - network: {get_param: 'Network'}
-     # #user_data: |
-   #     #!/bin/bash
-    #   # apt-get update -y
-      #user_data_format: RAW
+      network: { get_resource: Net }
+      
+  Router:
+    type: OS::Neutron::Router
+    properties:
+      name: { list_join: [ '-', [ { get_param: 'Environment' }, 'router' ] ] }
+      external_gateway_info: {
+      enable_snat: True,
+      network: ext-net
+      }
