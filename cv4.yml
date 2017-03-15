@@ -24,10 +24,15 @@ parameters:
     type: string
     default: Ubuntu server 14.04 amd64 KIS
 
-  Network:
-    description: Network
+  Environment:
+    description: Environment
     type: string
-    default: ext-net
+    default: test
+  
+  Network:
+    description: SubnetCidr
+    type: string
+    default: 10.255.255.0/24   
 
 resources:
   Net:
@@ -36,6 +41,18 @@ resources:
       admin_state_up: True
       name: { list_join: [ '-', [ { get_param: 'Environment' }, 'network' ] ] }
       shared: False
+  
+   Subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      admin_state_up: True
+      name: { list_join: [ '-', [ { get_param: 'Environment' }, 'subnet' ] ] }
+      cidr: { get_param: SubnetCidr }
+      dns_nameservers:
+        -8.8.8.8
+        -8.8.4.4
+      enable_dhcp: True
+      network: { get_resource: Net }      
   #Instance:
    # type: OS::Nova::Server
     #properties:
