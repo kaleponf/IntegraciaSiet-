@@ -47,7 +47,7 @@ resources:
       #network: { get_param: 'Network' }
      # networks:
       #  - network: {get_param: 'Network'}
-      #user_data: |
+     # #user_data: |
    #     #!/bin/bash
     #   # apt-get update -y
       #user_data_format: RAW
