@@ -29,7 +29,7 @@ parameters:
     type: string
     default: test
   
-  Network:
+  SubnetCidr:
     description: SubnetCidr
     type: string
     default: 10.255.255.0/24   
