@@ -37,7 +37,7 @@ parameters:
   JumpFloatingIpID:
     description: JumpFloatingIpID
     type: string
-    default: eb433cf6-3884-44f9-bbd2-22e7df9a2f00
+    default: 2c5c1d92-1419-4db7-b7ba-21b65fcfc370
   
 resources:
  Net:
