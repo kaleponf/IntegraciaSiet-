@@ -38,7 +38,8 @@ resources:
       availability_zone: { get_param: 'AvailabilityZone' }
       flavor: { get_param: 'Flavor' }
       image: { get_param: 'Image' }
-      network: { get_param: 'Network' }
+      network: 
+        - network: { get_param: 'Network' }
       user_data: |
         #!/bin/bash
         apt-get update -y
