@@ -31,18 +31,17 @@ parameters:
   
   SubnetCidr:
     description: SubnetCidr
-    type: string
+    type: strng
     default: 10.255.255.0/24   
 
 resources:
-  Net:
+   Net:
     type: OS::Neutron::Net
     properties:
       admin_state_up: True
       name: { list_join: [ '-', [ { get_param: 'Environment' }, 'network' ] ] }
       shared: False
-  
-   Subnet:
+  Subnet:
     type: OS::Neutron::Subnet
     properties:
       admin_state_up: True
