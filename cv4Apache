@@ -74,49 +74,77 @@ resources:
      router: { get_resource: Router }
      subnet: { get_resource: Subnet }
  
- ApplicationSecurityGroup:
+ JumpPrivateSecurityGroup:
    type: OS::Neutron::SecurityGroup
    properties:
-     name: { list_join: ['-', [ { get_param: 'Cvicenie'}, 'application_security_group' ] ] }
+     name: { list_join: ['-', [ { get_param: 'Cvicenie'}, 'jump_security_group' ] ] }
      rules: [
        { direction: ingress, ethertype: IPv4, protocol: tcp, port_range_min: 22, port_range_max: 22, remote_ip_prefix: 158.193.0.0/16 },
-       { direction: ingress, ethertype: IPv4, protocol: icmp, remote_ip_prefix: 158.193.0.0/16 },
-       { direction: ingress, ethertype: IPv4, protocol: tcp, port_range_min: 80, port_range_max: 80, remote_ip_prefix: 158.193.0.0/16 },
-       { direction: ingress, ethertype: IPv4, protocol: tcp, port_range_min: 443, port_range_max: 443, remote_ip_prefix: 158.193.0.0/16 }
+       { direction: ingress, ethertype: IPv4, protocol: icmp, remote_ip_prefix: 158.193.0.0/16 }
      ]
  
- ApplicationPort:
+ JumpPort:
    type: OS::Neutron::Port
    properties:
-     name: { list_join: ['-', [ { get_param: 'Cvicenie'}, 'application_port' ] ] }
+     name: { list_join: ['-', [ { get_param: 'Cvicenie'}, 'jump_port' ] ] }
      fixed_ips:
        - subnet: { get_resource: Subnet }
      security_groups:
-       - { get_resource: ApplicationPrivateSecurityGroup }
+       - { get_resource: JumpPrivateSecurityGroup }
      network: { get_resource: Net }
  
- Application:
+ Jump:
     type: OS::Nova::Server
     properties:
-      name: { list_join: ['-', [ { get_param: 'Cvicenie'}, 'application' ] ] }
+      name: { list_join: ['-', [ { get_param: 'Cvicenie'}, 'jump' ] ] }
       availability_zone: { get_param: 'AvailabilityZone' }
       flavor: { get_param: 'Flavor' }
       image: { get_param: 'Image' }
       networks:
-       - port: { get_resource: ApplicationPort }
-      user_data:
-        str_replace:
-          template: |
-            #!/bin/bash
-            apt-get install apache2
-            apache2 start
-
-          params: 
-            $Environment: { get_param: Environment }
+       - port: { get_resource: JumpPort }
+      user_data: |
+        #!/bin/bash
+        apt-get update -y
       user_data_format: RAW
  
- ApplicationFloatingIpAssociation:
+ JumpFloatingIpAssociation:
    type: OS::Neutron::FloatingIPAssociation
    properties:
-     floatingip_id: { get_param: ApplicationFloatingIpID }
-     port_id: { get_resource: ApplicationPort } 
+     floatingip_id: { get_param: JumpFloatingIpID }
+     port_id: { get_resource: JumpPort }
+     
+ AppPrivateSecurityGroup:
+   type: OS::Neutron::SecurityGroup
+   properties:
+     name: { list_join: ['-', [ { get_param: 'Cvicenie'}, 'app_security_group' ] ] }
+     rules: [
+       { direction: ingress, ethertype: IPv4, protocol: tcp, port_range_min: 22, port_range_max: 22, remote_ip_prefix: 10.255.255.0/24 },
+       { direction: ingress, ethertype: IPv4, protocol: tcp, port_range_min: 80, port_range_max: 80, remote_ip_prefix: 10.255.255.0/24 },
+       { direction: ingress, ethertype: IPv4, protocol: tcp, port_range_min: 443, port_range_max: 443, remote_ip_prefix: 10.255.255.0/24 },
+       { direction: ingress, ethertype: IPv4, protocol: icmp, remote_ip_prefix: 10.255.255.0/24 }
+     ]
+     
+ AppPort:
+   type: OS::Neutron::Port
+   properties:
+     name: { list_join: ['-', [ { get_param: 'Cvicenie'}, 'app_port' ] ] }
+     fixed_ips:
+       - subnet: { get_resource: Subnet }
+     security_groups:
+       - { get_resource: AppPrivateSecurityGroup }
+     network: { get_resource: Net }
+     
+ App:
+    type: OS::Nova::Server
+    properties:
+      name: { list_join: ['-', [ { get_param: 'Cvicenie'}, 'app' ] ] }
+      availability_zone: { get_param: 'AvailabilityZone' }
+      flavor: { get_param: 'Flavor' }
+      image: { get_param: 'Image' }
+      networks:
+       - port: { get_resource: AppPort }
+      user_data: |
+        #!/bin/bash
+        apt-get update -y
+        apt-get install apache2 -y 
+      user_data_format: RAW
