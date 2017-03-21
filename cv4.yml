@@ -116,4 +116,4 @@ resources:
    type: OS::Neutron::FloatingIPAssociation
    properties:
      floatingip_id: { get_param: JumpFloatingIpID }
-     port_id: { get_resource: JumpPort }      
+     port_id: { get_resource: JumpPort }     
