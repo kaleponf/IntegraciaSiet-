@@ -21,7 +21,7 @@ parameters:
   Image:
     description: image
     type: string
-    default: ubuntu_server_14.04_amd64_Openstack
+    default: ubuntu_server_14.04_amd64_KIS
 
   Enviroment:
     description: Enviroment
@@ -131,7 +131,7 @@ resources:
     type: OS::Neutron::Port
     properties:
       name: { list_join: [ '-', [ { get_param: 'Cvicenie' }, 'proxy-port' ] ] }
-      fixed_ips: [{ subnet: { get_resource: Subnet }, ip_address: 10.255.255.254 }]
+      fixed_ips: [{ subnet: { get_resource: Subnet }, ip_address: 10.255.255.10 }]
       security_groups:
         - { get_resource: ProxyPrivateSecurityGroup }
       network: { get_resource: Net }
@@ -195,9 +195,9 @@ resources:
                       </body>
                   </html>    
                  " > /var/www/html/index.html
-            echo "export http_proxy=http://10.255.255.254:3128
-                  export https_proxy=http://10.255.255.254:3128
-                  export apt_proxy=http://10.255.255.254:3128" >> /etc/profile 
+            echo "export http_proxy=http://10.255.255.10:3128
+                  export https_proxy=http://10.255.255.10:3128
+                  export apt_proxy=http://10.255.255.10:3128" >> /etc/profile 
           params:
             $Enviroment: { get_param: Enviroment }
       user_data_format: RAW
